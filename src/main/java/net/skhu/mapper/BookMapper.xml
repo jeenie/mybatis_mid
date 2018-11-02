@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.skhu.mapper.BookMapper">
+	<select id="findOne" resultType="Book">
+		SELECT * FROM book WHERE id = #{id}
+	</select>
+	<select id="findAll" resultType="Book">
+		SELECT b.*, c.categoryName, p.title FROM book b LEFT JOIN category c ON c.id = b.categoryId LEFT JOIN publisher p ON b.publisherId = p.id
+	</select>
+	
+	<select id="findAll2" resultMap="resultBook">
+		SELECT b.*, c.id category_Id, c.categoryName, p.id publisher_Id, p.title publisherName FROM book b LEFT JOIN category c ON c.id = b.categoryId LEFT JOIN publisher p ON b.publisherId = p.id 
+	</select>
+	
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		INSERT book (title, author, categoryId, price, publisherId, available)
+		VALUES (#{title}, #{author}, #{categoryId}, #{price}, #{publisherId}, #{available})
+	</insert>
+	<update id="update">
+		UPDATE book SET 
+			title = #{title},
+			author = #{author},
+			categoryId = #{categoryId},
+			price = #{price},
+			publisherId = #{publisherId},
+			available = #{available}
+		WHERE id = #{id}
+	</update>
+	<delete id="delete">
+		DELETE FROM book WHERE id = #{id}
+	</delete>
+	
+	<resultMap id="resultBook" type="net.skhu.dto.Book">
+		<id property="id" column="id"/>
+		<result property="title" column="title" />
+		<result property="author" column="author" />
+		<result property="price" column="price"/>
+		<result property="categoryId" column="categoryId" />
+		<result property="categoryName" column="categoryName" />
+		<result property="publisherId" column="publisherId" />
+		<result property="publisherName" column="publisherName" />
+		<result property="available" column="available"/>
+		<association property="category" javaType="Category">
+			<id property="id" column="category_Id"/>
+			<result property="categoryName" column="categoryName"/>
+		</association>
+		<association property="publisher" javaType="Publisher">
+			<id property="id" column="publisher_Id"/>
+			<result property="title" column="publisherName"/>
+		</association>
+	</resultMap>
+</mapper>
